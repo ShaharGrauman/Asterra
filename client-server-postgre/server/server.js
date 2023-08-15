@@ -2,62 +2,46 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const select = require('react-select')
 const path = require('path');
+const { getPool } = require('./DAL/db');
 
 require('dotenv').config({
     override: true,
     path: path.join(__dirname, 'development.env')
 });
 
-const {Pool, Client} = require('pg');
 const app = express()
 
-app.pool = new Pool ({
-    host: process.env.HOST,
-    database: process.env.DATABASE,
-    port: process.env.PORT
-});
+app.pool = getPool()
 
 app.use(bodyParser.json())
 app.get("/api", (req, res) => {
     res.send("from server")
 })
 
-app.post("/api/logIn", (req, res) => {
-    app.pool = new Pool ({
-        user: req.body.UserName,
-        host: process.env.HOST,
-        database: process.env.DATABASE,
-        password: req.body.Password,
-        port: process.env.PORT
-    });
-    (async () => {
-        try{
-            const client = await app.pool.connect();
-            const {rows} = await client.query('SELECT current_user');
-            const currentUser = rows[0]['current_user'];
-            res.json({"message": "Success"})
-            return currentUser === req.body.UserName;
-        } catch (err) {
-            console.error(err);
-            res.json({"message": "Error"})
-            return false;
-        }
-    })();
+app.post("/api/logIn", async (req, res) => {
+    try{
+        const result = login(req.body.UserName, req.body.Password)
+        res.json(result)
+    } catch (err) {
+        res.json({"message": "Error"})
+    }
 })
 
-app.post("/api/addUser", (req, res) => {
-    (async () => {
-        const client = await app.pool.connect();
-        try{
-            await client.query('INSERT INTO "Ron_Shani".users("first_name" , "last_name", "address", "phone_number") VALUES ($1, $2, $3, $4)', [req.body.FirstName, req.body.LastName, req.body.Address, req.body.Phone]);
-            return true;
-        } catch (err) {
-            console.error(err);
-        } finally {
-            client.release();
-        }
-        
-    })();
+app.post("/api/addUser", async (req, res) => {
+    const {FirstName, LastName, Address, Phone} = req.body;
+
+    db.addUser(FirstName, LastName, Address, Phone);
+
+    const client = await app.pool.connect();
+    try{
+        await client.query('INSERT INTO "Ron_Shani".users("first_name" , "last_name", "address", "phone_number") VALUES ($1, $2, $3, $4)', 
+                            [req.body.FirstName, req.body.LastName, req.body.Address, req.body.Phone]);
+        return true;
+    } catch (err) {
+        console.error(err);
+    } finally {
+        client.release();
+    }        
     res.json({"message": "User added successfully"})
 })
 

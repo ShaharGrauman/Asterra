@@ -1,5 +1,6 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import { View } from 'react-native';
+import { getUsers } from '../api/users';
 import UsersSelection from './dropdown.tsx'
 
 const ShowUsers = () => {
@@ -8,19 +9,17 @@ const ShowUsers = () => {
         names:["test", "one", "two", "three"]
     })
     
-    if(!isUsersListPopulated){
-    fetch("/api/hobbies",{
-            method: "get",
-            headers:{
-                "Content-Type": "application/json"
-            },
-        }).then(response => response.json()).then(data=>{
-            if(data.message === "Success"){
-                setList(data.users.split(","));
-                setPopulated(true);
-            }
-        })
-    }
+    //read about useEffect on react documents
+    useEffect(() => {
+      const users = getUsers()
+    
+    //   setList(data.users.split(","));
+    //             setPopulated(true);
+      return () => {
+        second
+      }
+    }, [])
+
     return (
         <div>
             <View style={{ flexDirection: 'column', backgroundColor: 'black' }}>

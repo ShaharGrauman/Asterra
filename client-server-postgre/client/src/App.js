@@ -7,8 +7,10 @@ import ShowUsers from './components/show_users';
 function App() {
   const [isOpened, setIsOpened] = useState(false);
   const [isShowUsers, setShowUsers] = useState(false);
-  const [state, setState] = useState(false);
+  const [needsLogin, setNeedsLogin] = useState(true);
   const [logInResult, setLogInResult] = useState('pre');
+
+  // const []
 
   function showAddUser() {
     setIsOpened(isOpened => !isOpened);
@@ -27,21 +29,21 @@ function App() {
       {logInResult === "Error" && (
           <h1 style={{color: 'red', lineHeight : 2, textAlign: 'center' }}>LogIn Error</h1>
       )}
-
+      
       <div style={{padding: 100}}>
-        {state === false && (
+        {needsLogin && (
           <div className="logInBox">
-            <LogIn stateChanger={setState} logInResult={setLogInResult}/>
+            <LogIn stateChanger={setNeedsLogin} logInResult={setLogInResult}/>
           </div>
         )}
 
 
-        {state && (
-          <button onClick={showUsers} style={{ color: 'green', lineHeight : 1, textAlign: 'center', padding: 20, fontSize: 24}}>Show Users</button>
+        {!needsLogin && (
+          <button onClick={showUsers} className="green-center">Show Users</button>
         )}
 
-        {state && (
-          <button onClick={showAddUser} style={{ color: 'green', lineHeight : 1, textAlign: 'center', padding: 20, fontSize: 24}}>Insert User</button>
+        {!needsLogin && (
+          <button onClick={showAddUser} className="green-center">Insert User</button>
         )}
        
 
