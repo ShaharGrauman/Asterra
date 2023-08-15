@@ -65,22 +65,19 @@ app.post("/api/addUser", (req, res) => {
 })
 
 
-app.post("/api/hobbies", (req, res) => {
+app.get("/api/hobbies", (req, res) => {
     (async () => {
         const client = await app.pool.connect();
         try{
-            await client.query('INSERT INTO "Ron_Shani".users("first_name" , "last_name", "address", "phone_number") VALUES ($1, $2, $3, $4)', [req.body.FirstName, req.body.LastName, req.body.Address, req.body.Phone]);
+            let users_list = await client.query('SELECT u.first_name, u.last_name FROM "Ron_Shani".users u');
+            res.json({"users": users_list, "message": "Success"})
             return true;
         } catch (err) {
             console.error(err);
         } finally {
             client.release();
         }
-        
     })();
-
-    console.log(req.body)
-    res.json({"message": "User added successfully"})
 })
 
 
