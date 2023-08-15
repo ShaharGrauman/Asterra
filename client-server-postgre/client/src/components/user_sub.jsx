@@ -25,9 +25,8 @@ function UserSub() {
             },
             body:JSON.stringify(userData)
         }).then(response => response.json()).then(data=>{
-            console.log(data)
+            console.log("user added successfully")
         })
-        console.log("Clicked")
     }
 
     return (

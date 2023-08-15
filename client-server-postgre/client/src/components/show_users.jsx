@@ -1,30 +1,31 @@
 import React, {useState} from 'react';
 import { View } from 'react-native';
+import UsersSelection from './dropdown.tsx'
 
 const ShowUsers = () => {
     const [isUsersListPopulated, setPopulated] = useState(false)
-    const [usersList, setList] = useState([])
-
+    const [usersList, setList] = useState({
+        names:["test", "one", "two", "three"]
+    })
+    
+    if(!isUsersListPopulated){
     fetch("/api/hobbies",{
             method: "get",
             headers:{
                 "Content-Type": "application/json"
             },
         }).then(response => response.json()).then(data=>{
-            console.log(data)
             if(data.message === "Success"){
+                setList(data.users.split(","));
                 setPopulated(true);
-                setList(Array(data.users.rows));
-
-                console.log(data.users.rows);
             }
         })
-
+    }
     return (
         <div>
             <View style={{ flexDirection: 'column', backgroundColor: 'black' }}>
             {isUsersListPopulated && (
-                <h1 style={{color: 'red', lineHeight : 2, textAlign: 'center' }}>{usersList}</h1>
+                <UsersSelection UsersList={usersList}/>
             )}
             </View>
         </div>

@@ -21,10 +21,8 @@ const LogIn = ({ stateChanger , logInResult}) => {
             },
             body:JSON.stringify(userData)
         }).then(response => response.json()).then(data=>{
-            console.log(data)
             if(data.message === "Success"){
                 stateChanger(true);
-                
             }
             logInResult(data.message)
         })

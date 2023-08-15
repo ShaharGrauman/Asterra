@@ -35,7 +35,6 @@ app.post("/api/logIn", (req, res) => {
             const client = await app.pool.connect();
             const {rows} = await client.query('SELECT current_user');
             const currentUser = rows[0]['current_user'];
-            console.log(currentUser === req.body.UserName)
             res.json({"message": "Success"})
             return currentUser === req.body.UserName;
         } catch (err) {
@@ -59,8 +58,6 @@ app.post("/api/addUser", (req, res) => {
         }
         
     })();
-
-    console.log(req.body)
     res.json({"message": "User added successfully"})
 })
 
@@ -70,7 +67,12 @@ app.get("/api/hobbies", (req, res) => {
         const client = await app.pool.connect();
         try{
             let users_list = await client.query('SELECT u.first_name, u.last_name FROM "Ron_Shani".users u');
-            res.json({"users": users_list, "message": "Success"})
+            let users_parsed = "";
+            for(i = 0; i<users_list.rowCount; i++) {
+                users_parsed += users_list.rows[i].first_name + ' ' + users_list.rows[i].last_name+',';
+                
+            }
+            res.json({"users": users_parsed, "message": "Success"})
             return true;
         } catch (err) {
             console.error(err);
